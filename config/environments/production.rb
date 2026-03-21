@@ -48,6 +48,12 @@ Rails.application.configure do # rubocop:todo Metrics/BlockLength
   # Store uploaded files — defaults to S3/MinIO; set ACTIVE_STORAGE_SERVICE=local for staging.
   config.active_storage.service = ENV.fetch('ACTIVE_STORAGE_SERVICE', 'amazon').to_sym
 
+  # Always proxy ActiveStorage files through the Rails app rather than issuing pre-signed
+  # redirects to the S3/Garage endpoint. This is required when the storage endpoint is an
+  # internal address (e.g. Garage at http://172.17.0.1:3900) unreachable by browsers, and
+  # is good practice regardless — clients never see storage backend URLs.
+  config.active_storage.resolve_model_to_route = :rails_storage_proxy
+
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
   # config.action_cable.url = "wss://example.com/cable"
